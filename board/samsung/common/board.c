@@ -54,12 +54,19 @@ __weak int exynos_power_init(void)
 static int get_boot_mmc_dev(void)
 {
 	u32 mode = readl(EXYNOS4_OP_MODE) & 0x1C;
+#ifdef CONFIG_TARGET_ITOP4412
+	if (mode == 0x04)
+		return 0; /* MMC2: SD */
 
+	/* MMC0: eMMC or unknown */
+	return 1;
+#else
 	if (mode == 0x04)
 		return 2; /* MMC2: SD */
 
 	/* MMC0: eMMC or unknown */
 	return 0;
+#endif	
 }
 
 #if defined CONFIG_EXYNOS_TMU
@@ -223,7 +230,8 @@ int board_late_init(void)
 	char mmcbootdev_str[16];
 
 	ret = uclass_first_device_err(UCLASS_CROS_EC, &dev);
-	if (ret && ret != -ENODEV) {
+	// not enable cros_ec
+	if (ret && ret != -ENODEV && ret != -EPFNOSUPPORT) {
 		/* Force console on */
 		gd->flags &= ~GD_FLG_SILENT;
 

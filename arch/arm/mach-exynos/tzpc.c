@@ -9,6 +9,25 @@
 #include <asm/arch/tzpc.h>
 #include <asm/io.h>
 
+#ifdef CONFIG_TARGET_ITOP4412
+#include "common_setup.h"
+
+void tzasc_init(void)
+{
+	struct exynos4412_tzasc *tzasc;
+	unsigned int addr, start = 0, end = 0;
+	
+	start = samsung_get_base_dmc_tzasc();
+	end = start + ((NR_TZASC_BANKS - 1) * DMC_OFFSET);
+	
+	/* Set sp<n> = b1111 non-secure wr secure wr all allowed */
+	for (addr = start; addr <= end; addr += DMC_OFFSET) {
+		tzasc = (struct exynos4412_tzasc *)addr;
+		writel(RA0_VAL, &tzasc->region_attributes_0);
+	}
+}
+#endif
+
 /* Setting TZPC[TrustZone Protection Controller] */
 void tzpc_init(void)
 {
