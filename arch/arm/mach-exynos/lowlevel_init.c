@@ -230,6 +230,9 @@ int do_lowlevel_init(void)
 #endif
 		mem_ctrl_init(actions & DO_MEM_RESET);
 		tzpc_init();
+	#ifdef CONFIG_TARGET_ITOP4412	
+		tzasc_init();
+	#endif	
 	}
 
 	return actions & DO_WAKEUP;

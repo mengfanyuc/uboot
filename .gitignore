@@ -1,1 +1,3 @@
 .vscode/
+.binman_stamp
+itop4412-uboot.bin
